@@ -1,11 +1,76 @@
-// Ionic Starter App
+(function(){ //Immediately invoked anonymous function
+  
+var app = angular.module('mynotes', ['ionic','mynotes.notestore']);
 
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic'])
+app.config(function($stateProvider, $urlRouterProvider){
+  
+  $stateProvider.state('list',{
+    url:'/list',
+    templateUrl: 'templates/list.html'
+  });
+  
+  $stateProvider.state('add',{
+    url:'/add',
+    templateUrl: 'templates/edit.html',
+    controller: 'AddCtrl'
+  });
+  
+  $stateProvider.state('edit',{
+    url:'/edit/:noteId',
+    templateUrl: 'templates/edit.html',
+    controller: 'EditCtrl'
+  });
+  
+  $urlRouterProvider.otherwise('/list');
+  
+});
 
-.run(function($ionicPlatform) {
+app.controller('ListCtrl', function($scope, NoteStore){
+  
+  $scope.reordering = false;
+  $scope.notes = NoteStore.list();
+
+  $scope.remove = function(noteId){
+    NoteStore.remove(noteId);
+  };
+  
+  $scope.move = function(note, fromIndex, toIndex){
+    NoteStore.move(note, fromIndex, toIndex);
+  };
+
+  $scope.toggleReordering = function(){
+    $scope.reordering = !$scope.reordering;
+  };
+
+});
+
+app.controller('AddCtrl', function($scope, $state, NoteStore){
+  
+  $scope.note = {
+    id: new Date().getTime().toString(),
+    title: '',
+    description: ''
+  };
+  
+  $scope.save = function(){
+    NoteStore.create($scope.note);
+    $state.go('list');
+  }; 
+  
+});
+
+app.controller('EditCtrl', function($scope, $state, NoteStore){
+  
+  $scope.note = angular.copy(NoteStore.get($state.params.noteId));
+  
+  $scope.save = function(){
+    NoteStore.update($scope.note);
+    $state.go('list');
+  }; 
+  
+});
+
+app.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -17,3 +82,5 @@ angular.module('starter', ['ionic'])
     }
   });
 })
+
+}());
