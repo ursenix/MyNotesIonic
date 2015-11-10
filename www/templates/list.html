@@ -1,23 +1,47 @@
 <ion-view view-title="My Notes" ng-controller="ListCtrl">
-	<ion-content>
-		<ion-list show-reorder="reordering">
-			<ion-item class="item-remove-animate item-icon-right"
+	
+	<div class="bar  bar-subheader item-input-inset bar-light">
+        <label class="item-input-wrapper">
+          <i class="icon ion-search placeholder-icon"></i>
+          <input type="search" placeholder="Search" ng-model="query"> 
+        </label>
+    </div>
+	  
+	<ion-content class="has-subheader">
+		
+		<ion-list show-reorder="reordering" class="list card">
+			<ion-item class="item-icon-left item-remove-animate
+			 item-icon-right item-text-wrap"
 			href="#/edit/{{note.id}}"
-			ng-repeat="note in notes track by note.id">
+			ng-repeat="note in notes | filter: query"> 
+			<!--track by note.id-->
+				<i class="icon ion-card"></i>
+				<!--<img src="http://placehold.it/5x5" alt="Note">-->
 				<h2>{{note.title}}</h2>
-				<p>{{note.description}}</p>
+				<p>{{note.description | limitTo:75}}
+					{{note.description.length > 75 ? '&hellip;' : ''}}
+				</p>
 				<i class="icon ion-arrow-right-b"></i>
+				
 				<ion-reorder-button class="ion-drag"
 				on-reorder="move(note, $fromIndex, $toIndex)"></ion-reorder-button>
+				
+				<i class="button button-clear icon ion-star button-balanced"
+					ng-show="note.favorite">
+				</i>
+				
 				<ion-option-button class="button-assertive icon-left ion-trash-b"
 				ng-click="remove(note.id)">Delete</ion-option-button>
 			</ion-item>
 		</ion-list>
+		
 	</ion-content>
+	
 	<div class="bar bar-footer bar-stable">
 		<a href="#/add" class="button button-assertive icon-left ion-compose">New Note</a>
-		<button class="button button-light icon-left ion-shuffle"
+		<button class="button button-light icon-left ion-shuffle button-dark"
 		ng-click="toggleReordering()">Reorder
 		</button>
 	</div>
+	
 </ion-view>
